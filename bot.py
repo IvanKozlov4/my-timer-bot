@@ -14,29 +14,21 @@ def get_time_text():
     diff = TARGET_DATE - now
     
     if now >= TARGET_DATE:
-        return "🎉 СОБЫТИЕ НАСТУПИЛО! 🎉"
+        return "🎉"
     
     days = diff.days
     hours = diff.seconds // 3600
     minutes = (diff.seconds % 3600) // 60
     seconds = diff.seconds % 60
     
-    return f"""⏰ ДО 6 ИЮНЯ 2026 (2:00):
-
-┌─────────────────────┐
-│  {days:3d} дней         │
-│  {hours:3d} часов        │
-│  {minutes:3d} минут       │
-│  {seconds:3d} секунд      │
-└─────────────────────┘"""
+    # Только цифры через двоеточие
+    return f"{days:03d}:{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 async def start(update: Update, context):
     await update.message.reply_text(
-        "🎯 Бот обратного отсчета!\n\n"
-        "📅 Отсчет до 6 июня 2026, 2:00\n\n"
         "Команды:\n"
-        "/check - проверить время\n"
-        "/live - запустить живой отсчет\n"
+        "/check - проверить\n"
+        "/live - запустить\n"
         "/stop - остановить"
     )
 
@@ -56,8 +48,6 @@ async def live(update: Update, context):
     # Создаем задачу на обновление
     task = asyncio.create_task(update_timer(context, chat_id, msg.message_id))
     active_timers[chat_id] = task
-    
-    await update.message.reply_text("✅ Живой отсчет запущен! Обновление каждую секунду.")
 
 async def update_timer(context, chat_id, message_id):
     """Обновляет сообщение каждую секунду"""
@@ -88,7 +78,7 @@ async def stop(update: Update, context):
     if chat_id in active_timers:
         active_timers[chat_id].cancel()
         del active_timers[chat_id]
-        await update.message.reply_text("⏹️ Отсчет остановлен.")
+        await update.message.reply_text("⏹️")
     else:
         await update.message.reply_text("Нет активного отсчета. Запустите /live")
 
